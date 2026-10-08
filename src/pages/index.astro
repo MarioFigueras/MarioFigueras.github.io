@@ -1,0 +1,46 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+
+const posts = (await getCollection('blog')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, 5);
+const fmt = (d: Date) => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+
+const projects = [
+  { name: 'NihonWorld', text: 'A Japanese tutor you play. Plain code decides what you learn; an LLM only plays a part in the scene.' },
+  { name: 'Generator', text: "Makes NihonWorld's content. It proposes, a human reviews, and only approved content reaches the game." },
+  { name: 'Agent Hub', text: 'How I get Claude, ChatGPT and Codex to work on the same project: they audit each other, I approve.' },
+];
+---
+
+<Base>
+  <h1>Hi, I'm Mario.</h1>
+  <p class="lead">
+    I'm building NihonWorld, a Japanese tutor you play, and learning a lot on the way: architecture, Jira, and how
+    to get AI agents to work together without letting them greenlight stuff that isn't properly tested.
+  </p>
+  <p>This is where I write down what actually happened, mistakes included.</p>
+
+  <h2>Latest entries</h2>
+  {posts.length === 0 ? (
+    <p class="empty">First entry coming soon: why I'm splitting NihonWorld into two projects before adding more features.</p>
+  ) : (
+    <ul class="posts">
+      {posts.map((p) => (
+        <li>
+          <time datetime={p.data.date.toISOString()}>{fmt(p.data.date)}</time>
+          <a href={`/blog/${p.id}/`}>{p.data.title}</a>
+        </li>
+      ))}
+    </ul>
+  )}
+
+  <h2>What I'm working on</h2>
+  <ul class="cards">
+    {projects.map((p) => (
+      <li class="card">
+        <h3>{p.name}</h3>
+        <p>{p.text}</p>
+      </li>
+    ))}
+  </ul>
+</Base>

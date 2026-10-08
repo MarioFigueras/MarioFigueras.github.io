@@ -1,0 +1,15 @@
+# build output and deps
+dist/
+.astro/
+node_modules/
+
+# private working material: never in the public repo
+drafts/
+docs/
+.davinci-project-card.md
+
+# env / OS
+.env
+.env.*
+.DS_Store
+Thumbs.db
