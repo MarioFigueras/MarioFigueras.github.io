@@ -4,7 +4,7 @@ import Base from '../../layouts/Base.astro';
 import Diorama from '../../components/Diorama.astro';
 import Plinth from '../../components/Plinth.astro';
 import TopicChips from '../../components/TopicChips.astro';
-import { posts, jdate, entryNumber, pad2 } from '../../lib/site';
+import { posts, jdate, entryNumber, isExtra, pad2 } from '../../lib/site';
 
 export async function getStaticPaths() {
   return (await posts()).map((post) => ({ params: { slug: post.id }, props: { post } }));
@@ -14,6 +14,7 @@ const { post } = Astro.props;
 const d = post.data;
 const { Content } = await render(post);
 const n = entryNumber(post);
+const extra = isExtra(post);
 const words = (post.body ?? '').split(/\s+/).filter(Boolean).length;
 const minutes = Math.max(1, Math.round(words / 230));
 ---
@@ -22,7 +23,7 @@ const minutes = Math.max(1, Math.round(words / 230));
   <article>
     <header class="phead">
       <div>
-        <div class="chips t-dot"><span class="b">DEVLOG No.{pad2(n)}</span><span>{jdate(d.date)}</span><span>{minutes} MIN READ</span></div>
+        <div class="chips t-dot"><span class="b">{extra ? <><span lang="ja">号外</span> EXTRA</> : `DEVLOG No.${pad2(n)}`}</span><span>{jdate(d.date)}</span><span>{minutes} MIN READ</span></div>
         <h1>{d.title}</h1>
         <p class="dek">{d.description}</p>
         <div class="meta">
@@ -34,7 +35,7 @@ const minutes = Math.max(1, Math.round(words / 230));
       {d.diorama ? (
         <Diorama name={d.diorama.name} jp={d.diorama.jp} en={d.diorama.en} note={d.diorama.note} />
       ) : (
-        <Plinth n={n} size="lg" />
+        <Plinth n={n} extra={extra} size="lg" />
       )}
     </header>
     <div class="pbody">
