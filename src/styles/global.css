@@ -14,6 +14,8 @@
   --blue-ink: #005f98;
   --mint: #a3e4c6;
   --mint-d: #7fcfab;
+  --mark: #a3e4c6;        /* highlight under text */
+  --on-blue: #fff;
   --board: #1b1a2e;       /* screens, boards, the terminal: dark in both themes */
   --board-ink: #f1ebdd;
   --solid: #1b1a2e;       /* diorama plinth sides */
@@ -33,17 +35,19 @@
   :root {
     --paper: #15142a;
     --card: #1f1d38;
-    --ink: #efe8da;
-    --muted: #a9a3ba;
+    --ink: #e4d9c3;        /* warm beige, not white: easier on the eyes */
+    --muted: #aaa190;
     --line: #34315a;
     --pink: #ff5cbc;
     --pink-ink: #ff7cc8;
     --blue: #3ea6ff;
     --blue-ink: #7cc2ff;
-    --mint: #8fdcb9;
-    --mint-d: #6cc39c;
+    --mint: #a9c9b9;       /* pastel and desaturated: never louder than the text */
+    --mint-d: #8aae9d;
+    --mark: #3d554d;       /* a quiet sage under light text */
+    --on-blue: #0c0b1b;
     --board: #0c0b1b;
-    --board-ink: #efe8da;
+    --board-ink: #e4d9c3;
     --solid: #2e2b52;
     --solid2: #3a3768;
     --wall1: #24395c;
@@ -89,11 +93,11 @@ a:hover { text-decoration-thickness: 3px; }
 /* ── chips and labels ─────────────────────────────────────────────────── */
 .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px; font-size: 0.74rem; }
 .chips span { border: 1.5px solid var(--ink); padding: 1px 8px; }
-.chips .b { background: var(--blue); border-color: var(--blue); color: #fff; }
+.chips .b { background: var(--blue); border-color: var(--blue); color: var(--on-blue); }
 .label { display: inline-flex; flex-wrap: wrap; border: 1.5px solid var(--ink); background: var(--card); font-size: 0.72rem; }
 .label span { padding: 1px 8px; border-right: 1.5px solid var(--ink); }
 .label span:last-child { border-right: 0; }
-.label .k { background: var(--blue); color: #fff; }
+.label .k { background: var(--blue); color: var(--on-blue); }
 .crew { margin-top: 8px; font-size: 0.72rem; color: var(--muted); }
 .crew i { font-style: normal; color: var(--pink-ink); }
 
@@ -103,7 +107,7 @@ a:hover { text-decoration-thickness: 3px; }
 .logo .word { font-family: 'Zen Dots', sans-serif; font-weight: 400; font-size: 5.3rem; line-height: 0.9; letter-spacing: -0.02em; text-shadow: 5px 5px 0 var(--pink); }
 .logo .kana { font-family: 'DotGothic16', monospace; display: flex; flex-direction: column; gap: 0.08em; font-size: 1.7rem; line-height: 1; color: var(--blue); padding-bottom: 6px; }
 .who { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 1.45rem; line-height: 1.15; letter-spacing: -0.015em; margin: 20px 0 10px; max-width: 20em; }
-.who em { font-style: normal; background: linear-gradient(transparent 58%, var(--mint) 58%); }
+.who em { font-style: normal; background: linear-gradient(transparent 58%, var(--mark) 58%); }
 .intro { max-width: 31em; margin: 0; font-size: 1.02rem; }
 
 /* ── dioramas ─────────────────────────────────────────────────────────── */
