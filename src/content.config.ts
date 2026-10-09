@@ -1,6 +1,7 @@
 import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
+import { TOPIC_SLUGS } from './data/topics';
 
 // One Markdown file per published entry. A file only lands here through a reviewed PR:
 // drafts live outside the repo, so nothing unreviewed is ever public.
@@ -12,6 +13,10 @@ const blog = defineCollection({
     date: z.coerce.date(),
     series: z.string().optional(),
     tags: z.array(z.string()).default([]),
+    // the filters (src/data/topics.ts): what the post is about
+    topics: z.array(z.enum(TOPIC_SLUGS)).default([]),
+    // a short note shown at the end when a published post was rewritten
+    revision: z.string().optional(),
     jira: z.string().optional(),
     // who wrote the first draft (Mario reviews and approves every post)
     drafted: z.string().default('claude'),

@@ -1,0 +1,26 @@
+---
+import Base from '../../layouts/Base.astro';
+import Entry from '../../components/Entry.astro';
+import TopicFilter from '../../components/TopicFilter.astro';
+import { TOPICS } from '../../data/topics';
+import { posts } from '../../lib/site';
+
+export function getStaticPaths() {
+  return TOPICS.map((t) => ({ params: { topic: t.slug }, props: { t } }));
+}
+
+const { t } = Astro.props;
+const all = await posts();
+const list = all.filter((p) => (p.data.topics as string[]).includes(t.slug));
+---
+
+<Base title={t.label} description={`Every devlog entry about ${t.label}.`}>
+  <section class="page">
+    <div class="chips t-dot"><span class="b">TOPIC</span><span>{list.length} {list.length === 1 ? 'ENTRY' : 'ENTRIES'}</span></div>
+    <h1>{t.label}</h1>
+    <TopicFilter posts={all} current={t.slug} />
+  </section>
+  <section class="archive">
+    {list.length > 0 ? list.map((p) => <Entry post={p} />) : <p class="dek">Nothing about this yet. It's coming.</p>}
+  </section>
+</Base>

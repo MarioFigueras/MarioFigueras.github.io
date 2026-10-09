@@ -1,7 +1,9 @@
 import type { APIRoute } from 'astro';
 import { posts } from '../lib/site';
+import { topic } from '../data/topics';
 
-// A hand-written RSS feed: a few lines here instead of another dependency.
+// A hand-written RSS feed for feed readers (linked from <head>, not from the menu: a browser shows a
+// feed as raw XML, which looks like an error). A few lines here instead of another dependency.
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
 export const GET: APIRoute = async ({ site }) => {
@@ -10,7 +12,8 @@ export const GET: APIRoute = async ({ site }) => {
     .map((p) => {
       const url = new URL(`/blog/${p.id}/`, base).href;
       return `<item><title>${esc(p.data.title)}</title><link>${url}</link><guid>${url}</guid>` +
-        `<pubDate>${p.data.date.toUTCString()}</pubDate><description>${esc(p.data.description)}</description></item>`;
+        `<pubDate>${p.data.date.toUTCString()}</pubDate><description>${esc(p.data.description)}</description>` +
+        p.data.topics.map((s) => `<category>${esc(topic(s)?.label ?? s)}</category>`).join('') + `</item>`;
     })
     .join('');
   const xml = `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel>` +

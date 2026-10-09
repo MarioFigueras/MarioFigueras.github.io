@@ -1,0 +1,18 @@
+---
+import { TOPICS } from '../data/topics';
+import type { Post } from '../lib/site';
+interface Props { posts: Post[]; current?: string }
+const { posts, current } = Astro.props;
+const count = (slug: string) => posts.filter((p) => (p.data.topics as string[]).includes(slug)).length;
+---
+<nav class="filter" aria-label="Filter by topic">
+  <a class="topic" href="/blog/" aria-current={!current ? 'page' : undefined}>All <span>{posts.length}</span></a>
+  {TOPICS.map((t) => {
+    const n = count(t.slug);
+    return n > 0 || t.slug === current ? (
+      <a class={`topic ink-${t.ink}`} href={`/topics/${t.slug}/`} aria-current={t.slug === current ? 'page' : undefined}>{t.label} <span>{n}</span></a>
+    ) : (
+      <span class="topic is-empty" title="Nothing here yet">{t.label} <span>0</span></span>
+    );
+  })}
+</nav>

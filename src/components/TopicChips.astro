@@ -1,0 +1,10 @@
+---
+import { topic } from '../data/topics';
+interface Props { topics: readonly string[] }
+const list = Astro.props.topics.map((s) => topic(s)).filter((t) => t !== undefined);
+---
+{list.length > 0 && (
+  <ul class="topics" aria-label="Topics">
+    {list.map((t) => <li><a class={`topic ink-${t.ink}`} href={`/topics/${t.slug}/`}>{t.label}</a></li>)}
+  </ul>
+)}

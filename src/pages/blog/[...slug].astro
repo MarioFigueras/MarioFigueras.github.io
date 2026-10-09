@@ -3,6 +3,7 @@ import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
 import Diorama from '../../components/Diorama.astro';
 import Plinth from '../../components/Plinth.astro';
+import TopicChips from '../../components/TopicChips.astro';
 import { posts, jdate, entryNumber, pad2 } from '../../lib/site';
 
 export async function getStaticPaths() {
@@ -24,7 +25,10 @@ const minutes = Math.max(1, Math.round(words / 230));
         <div class="chips t-dot"><span class="b">DEVLOG No.{pad2(n)}</span><span>{jdate(d.date)}</span><span>{minutes} MIN READ</span></div>
         <h1>{d.title}</h1>
         <p class="dek">{d.description}</p>
-        <div class="label t-dot">{d.jira && <span class="k">{d.jira}</span>}<span><span lang="ja">済</span> PUBLISHED</span>{d.tags.length > 0 && <span>{d.tags.join(' · ')}</span>}</div>
+        <div class="meta">
+          <div class="label t-dot">{d.jira && <span class="k">{d.jira}</span>}<span><span lang="ja">済</span> PUBLISHED</span></div>
+          <TopicChips topics={d.topics} />
+        </div>
         <div class="crew t-dot">drafted <i>{d.drafted}</i> · approved <i>mario</i></div>
       </div>
       {d.diorama ? (
@@ -34,7 +38,10 @@ const minutes = Math.max(1, Math.round(words / 230));
       )}
     </header>
     <div class="pbody">
-      <div class="prose"><Content /></div>
+      <div class="prose">
+        <Content />
+        {d.revision && <p class="revision t-dot">{d.revision}</p>}
+      </div>
       <aside>
         {d.spec && (
           <div class="spec">

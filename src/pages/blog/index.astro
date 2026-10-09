@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import Entry from '../../components/Entry.astro';
+import TopicFilter from '../../components/TopicFilter.astro';
 import { posts } from '../../lib/site';
 
 const all = await posts();
@@ -11,8 +12,9 @@ const all = await posts();
     <div class="chips t-dot"><span class="b">ARCHIVE</span><span>{all.length} {all.length === 1 ? 'ENTRY' : 'ENTRIES'}</span></div>
     <h1>Devlog</h1>
     <p class="dek">Decisions, things that broke, and what the AI agents did (and got wrong).</p>
+    <TopicFilter posts={all} />
   </section>
-  <section style="max-width: 46rem; padding-bottom: 30px">
+  <section class="archive">
     {all.map((p) => <Entry post={p} />)}
   </section>
 </Base>

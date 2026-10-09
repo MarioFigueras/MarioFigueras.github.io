@@ -1,5 +1,6 @@
 ---
 import Plinth from './Plinth.astro';
+import TopicChips from './TopicChips.astro';
 import { jdate, entryNumber, type Post } from '../lib/site';
 interface Props { post: Post }
 const { post } = Astro.props;
@@ -10,7 +11,10 @@ const d = post.data;
   <div>
     <h3><a href={`/blog/${post.id}/`}>{d.title}</a></h3>
     <p>{d.description}</p>
-    <div class="label t-dot"><span>{jdate(d.date)}</span>{d.jira && <span class="k">{d.jira}</span>}{d.tags.length > 0 && <span>{d.tags.join(' · ')}</span>}</div>
+    <div class="meta">
+      <div class="label t-dot"><span>{jdate(d.date)}</span>{d.jira && <span class="k">{d.jira}</span>}</div>
+      <TopicChips topics={d.topics} />
+    </div>
     <div class="crew t-dot">drafted <i>{d.drafted}</i> · approved <i>mario</i></div>
   </div>
 </article>

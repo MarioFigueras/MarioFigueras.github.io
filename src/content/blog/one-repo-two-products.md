@@ -1,9 +1,11 @@
 ---
 title: "One repo, two products: why I'm splitting NihonWorld before adding features"
-description: "Why NihonWorld is becoming two projects, and how Claude, ChatGPT and I made the decision."
+description: "Why NihonWorld is becoming two projects, and how three AIs and I made the decision."
 date: 2026-10-08
 series: "Devlog #1"
 tags: [nihonworld, architecture, adr, ai-agents]
+topics: [nihonworld, generator]
+revision: Rewritten on 2026-10-09 to make it shorter.
 jira: DLOG-1
 diorama:
   name: one-repo-two-products
@@ -19,143 +21,119 @@ spec:
     - [output, ADR-001 accepted]
 ---
 
-NihonWorld is a Japanese tutor you play. There's a 3D room, a school, and later places where you
-talk to people. Everything is still grey boxes, and that's on purpose.
+NihonWorld is a Japanese tutor you play. You don't walk around a 3D world: every place is a diorama,
+a small scene you look into and interact with, like your room or the school, and later places where
+you talk to people. That's also why this devlog is full of dioramas. Right now they're all grey
+boxes, and that's on purpose: I want the learning part to work before anything looks pretty.
 
-I've been building it with AI assistants for a few weeks. This week I stopped adding features and
-spent four days deciding how to split it into two projects. I didn't write a single line of
-refactoring code until the plan was done. This post is about why, and about how the decision got
-made, because honestly the process taught me as much as the result.
+This week I didn't add a single feature. I spent four days deciding how to split the project in
+two, and I didn't touch the code until the plan was done. Here's why, and how three AIs and I got
+there.
 
-## How it started
-
-The whole project hangs on one rule:
+## The rule everything hangs on
 
 > **Pedagogy is deterministic. The LLM is an actor that gets told what to do.**
 
-Plain code decides what you learn, when you review it, and whether your answer was right. That's
-spaced repetition with FSRS, plus rule-based grammar checks. A language model can improvise a little
-scene with the words it's given, but it never gets to decide anything.
+In plain words: normal code decides what you learn, when you review it and whether your answer was
+right. The AI can improvise a little scene with the words it's given, but it never decides anything
+about your learning.
 
-And the rule isn't just written down somewhere. A dependency check runs on every commit, so if the
-scheduler ever imports the model client, the commit fails and tells you why. Optional parts, like the
-voice engine, live in their own folder that the core never touches. There's even a test that copies
-the project *without* that folder and runs everything. If something breaks, the part wasn't really
-optional.
+And it's not just a nice sentence in a document. If a change breaks that rule, the project refuses
+it before it gets in.
 
-So far so good. The problem was that one repo was doing two different jobs:
+## One project doing two jobs
 
-- **the game:** what the player sees, and what they've learned so far;
-- **making the content:** analysing Japanese sentences, looking words up in the dictionary,
-  generating sentences, and all the tools that prepare a lesson.
+NihonWorld was doing two very different things at once: being the game, and being the workshop
+where lessons get made (analysing sentences, looking words up, generating exercises). If you've used
+Unity, picture shipping your game with the level editor glued inside it.
 
-## Why two projects
+<figure class="explain">
+  <figcaption class="explain-h"><span>EXPLAINER</span><span>ONE PROJECT VS TWO</span></figcaption>
+  <div class="explain-body explain-grid">
+    <div class="explain-col">
+      <b>Before: one project</b>
+      <div class="repo">
+        <span class="repo-name">nihonworld/</span>
+        <span class="chip pink">The game</span>
+        <span class="chip mint">The lesson workshop</span>
+        <span class="chip grey">One shared database and shared code</span>
+      </div>
+      <p>Everything can touch everything. Change a tool, and the game might break.</p>
+    </div>
+    <div class="explain-col">
+      <b>After: two projects</b>
+      <div class="flow">
+        <div class="repo"><span class="repo-name">generator/</span><span class="chip mint">Proposes content</span></div>
+        <span class="arrow">approved<br />package</span>
+        <div class="repo"><span class="repo-name">nihonworld/</span><span class="chip pink">Approved only</span></div>
+      </div>
+      <p>The game never depends on the workshop. Content only crosses one way, after I've reviewed it.</p>
+    </div>
+  </div>
+</figure>
 
-Three reasons pushed me to split it.
+## Why it's worth the trouble
 
-**1. Two builds that need different things.** I want one build I can hand to other people someday,
-and one personal build where I can play with LLMs and spoken conversation. The shareable one has no
-live generation at all. Every sentence and exercise is generated ahead of time, reviewed, and frozen,
-and the audio is recorded in advance. The experiments stay in my build, and there are good reasons
-for that: the voice engine I use can't be redistributed without permission, and a local LLM means
-gigabytes of model and a decent GPU. None of that belongs in something you give to someone else.
+- **I want two builds.** One I can share with other people someday, and one for myself, to
+  experiment with AI conversation and voice.
+- **Nothing generated reaches a player without my OK.** The Generator proposes, I review, and only
+  approved content gets into the game, locked with a fingerprint so it can't change behind my back.
+- **Licences.** Everything in a build I share has to be cleared, so I need to know exactly what's
+  inside and where each piece came from.
 
-**2. Generate, review, freeze.** If content is generated, somebody has to approve it before a learner
-ever sees it. Splitting the project turns that rule into an actual wall. The **Generator** proposes.
-**NihonWorld** only keeps what was approved, pins it with a hash, and builds a versioned content
-package from it. The short version: *NihonWorld never depends on the Generator.*
+<figure class="explain">
+  <figcaption class="explain-h"><span>EXPLAINER</span><span>TWO BUILDS, ONE GAME</span></figcaption>
+  <div class="explain-body builds">
+    <div class="build">
+      <b>The shareable build</b>
+      <ul>
+        <li>Every sentence and exercise made ahead of time, reviewed and frozen</li>
+        <li>Audio recorded in advance</li>
+        <li>No live AI at all</li>
+      </ul>
+      <div class="sum">= game + approved content</div>
+    </div>
+    <div class="build">
+      <b>My personal build</b>
+      <ul>
+        <li>Everything above, plus my experiments</li>
+        <li>A local AI model for conversation (gigabytes, and a decent GPU)</li>
+        <li>A voice engine I'm not allowed to redistribute</li>
+      </ul>
+      <div class="sum">= game + approved content + extras</div>
+    </div>
+  </div>
+</figure>
 
-**3. Licences.** Anything inside a build you share has to be cleared. Having one explicit content
-package means I can prove what's in it and where every piece came from, and refuse to build if
-something isn't cleared yet.
+## Easier said than done
 
-The Generator also becomes its own little product. First it will create exercises from each lesson's
-vocabulary and grammar. Later, translation, both grammatical and contextual.
+My first idea was "move a couple of folders and done". Spoiler: no.
 
-## Why I couldn't just move two folders
+Before designing anything, I had two AIs (Codex and Claude) audit the code separately, and they came
+back with the same bad news. One database held everything: reviews, the room, the notebook, school
+progress. One big content module touched half the project. Even the review scheduler was feeding the
+room's diorama. Each of those pieces needed an owner before anything could move.
 
-Before designing anything, I had two AI agents (Codex and Claude) audit the repo separately. They
-worked on a sealed copy through a small runner that keeps the evidence. The finding that mattered
-most, roughly:
+That was the most useful lesson of the week: what I thought the code looked like and what it
+actually looked like weren't the same.
 
-> You can't split this by moving two folders. Startup code, storage, contracts and services are
-> shared, and each one needs an owner first.
+## How the decision got made
 
-In practice:
+Think of the AIs as workers, each with their own job. After the audit, Claude and ChatGPT each
+reviewed the plan and came back with a numbered list of changes, and I decided every point, usually
+by answering options like "1a 2a 3b". Every document ended with a check that could only say
+**READY** or **NOT READY**, and three of them got a NOT READY at least once before passing.
 
-- one SQLite database holds reviews, the room, the notebook and the school progress;
-- one content module pulls in annotation, storage, dictionary, exercises, generation, kanji,
-  vocabulary and morphology;
-- the spaced-repetition scheduler also feeds the 3D room.
+They also got things wrong, which is exactly why they review each other. Claude once wrote something
+on a published page that contradicted a decision we had already accepted, and caught it itself two
+documents later. ChatGPT had missed it. Another time, ChatGPT caught a check Claude had added that
+could fail after a release was already locked.
 
-I had pictured "two domains in one repo". The code was actually organised around data, pedagogy,
-HTTP, storage and frontend. Without the audit I wouldn't have seen that gap.
+Two reviewers catch different things, and both still miss some. Someone has to understand what
+they're signing off, and that someone is me.
 
-## Before / after
+## Where it ended
 
-```text
-BEFORE                                   AFTER
-one repository                           Generator (authoring, dev time only)
- ├─ game (3D room, school, review)        └─ analysis · dictionary · generation
- ├─ authoring tools + analyser               │ produces candidate sets
- ├─ dictionary                               ▼
- ├─ optional voice (extras/)             human review and approval
- └─ one database                             ▼
-                                         NihonWorld (the game)
-                                          ├─ owns the curriculum and the approvals
-                                          ├─ builds a versioned content package
-                                          ├─ shareable build = core + package
-                                          └─ personal build  = core + package + extras
-```
-
-Content goes through five named steps: **LessonSource → LessonAuthoringBrief → CandidateSet →
-ApprovedContent → ReleaseContentPackage.** Naming every step felt a bit bureaucratic at first, but
-it made every discussion afterwards way more precise.
-
-The migration is a chain of small phases: first a baseline, then A′ all the way to F. A phase only
-closes when its checks pass, and then it gets a git tag. Twelve "architecture gates" define those
-checks. The game keeps its repo and its history, and the Generator gets extracted with its own
-history. Along the way I also decided both products will be English-only, which simplified more than
-I expected.
-
-## Agent diary
-
-This is how the decision actually got made:
-
-- **Audit.** Two agents audited the code separately, and the synthesis became the *Current
-  Architecture* doc.
-- **Proposal and reviews.** Claude reviewed the target architecture and the ADR, then ChatGPT did.
-  Both came back with *accept with changes* and a numbered list. I decided every point, usually by
-  answering numbered options like "1a 2a 3b".
-- **A hard stop.** Every document had a final check that could only answer **READY** or
-  **NOT READY**. Three of them came back NOT READY at least once before they passed.
-- **Where the AI got it wrong (both ways):**
-  - Claude wrote on a published page that each product owns the schemas it produces. That
-    contradicted an accepted contract saying NihonWorld owns all of them. Claude caught it itself, two
-    documents later, while reconciling everything. ChatGPT's review had missed it.
-  - Claude added a safety check to the release process that created a new way to fail *after* a
-    version tag that can't be changed. ChatGPT caught that one.
-- **What I decided:** scope, every trade-off, every merge, every ticket I closed. The agents propose.
-  Nothing counts as approved until I say so.
-
-Having them audit each other is the whole point. That's how I avoid an AI greenlighting something
-that isn't properly tested, or breaking stuff.
-
-In the end: six design documents, an accepted ADR, and an epic with fourteen implementation tickets,
-all before any refactoring.
-
-## What I learned
-
-- **Audit before you design.** What I thought the code looked like and what it actually looked like
-  weren't the same.
-- **An ADR records the decision, it doesn't make it.** The most useful part turned out to be the list
-  of decisions I *postponed*, each one with an owner and a deadline.
-- **Two models reviewing each other catch different things,** and both still miss some. Someone has
-  to understand what they're signing off, and that someone is me.
-- **READY / NOT READY makes reviews actually finish.** Without a clear verdict, a review can go on
-  forever.
-
-## Next
-
-The first real step is the **baseline**: measure and back up the app as it is, before touching
-anything. That's the next entry, along with whatever breaks on the way.
+Four days, six design documents, one accepted decision record, and fourteen small tasks lined up in
+order, all before touching the code. Now comes the actual split, one small phase at a time, and a
+phase only counts as done when its checks pass. I'll tell you how it goes, including what breaks.
