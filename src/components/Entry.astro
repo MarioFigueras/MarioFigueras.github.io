@@ -1,13 +1,13 @@
 ---
 import Plinth from './Plinth.astro';
 import TopicChips from './TopicChips.astro';
-import { jdate, entryNumber, type Post } from '../lib/site';
+import { jdate, entryNumber, isExtra, type Post } from '../lib/site';
 interface Props { post: Post }
 const { post } = Astro.props;
 const d = post.data;
 ---
 <article class="entry">
-  <Plinth n={entryNumber(post)} />
+  <Plinth n={entryNumber(post)} extra={isExtra(post)} />
   <div>
     <h3><a href={`/blog/${post.id}/`}>{d.title}</a></h3>
     <p>{d.description}</p>

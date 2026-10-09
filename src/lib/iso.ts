@@ -96,18 +96,24 @@ export class Scene {
     return [px, py - h - 12] as [number, number];
   }
 
-  /** A museum-style label with a leader line from (ax, ay) to an offset (dx, dy). */
+  /** A museum-style label with a leader line from (ax, ay) to an offset (dx, dy). A "\n" in the
+   *  text makes a second line, which keeps a wide label from shrinking the whole diorama. */
   label(ax: number, ay: number, dx: number, dy: number, text: string) {
     const tx = ax + dx, ty = ay + dy;
-    const w = text.length * 7.1 + 12;
+    const lines = text.split('\n');
+    const w = Math.max(...lines.map((l) => l.length)) * 7.1 + 12;
+    const h = 17 + (lines.length - 1) * 14;
     const left = dx < 0;
     const rx = left ? tx - w : tx;
+    const spans = lines
+      .map((l, i) => `<tspan x="${(rx + 6).toFixed(1)}" y="${(ty + 4 + i * 14).toFixed(1)}">${l}</tspan>`)
+      .join('');
     const g =
       `<path d="M${ax.toFixed(1)},${ay.toFixed(1)} L${tx.toFixed(1)},${ty.toFixed(1)}" class="s-ink f-none"/>` +
       `<circle cx="${ax.toFixed(1)}" cy="${ay.toFixed(1)}" r="2.4" class="f-ink"/>` +
-      `<rect x="${rx.toFixed(1)}" y="${(ty - 9).toFixed(1)}" width="${w.toFixed(1)}" height="17" class="f-paper s-ink"/>` +
-      `<text x="${(rx + 6).toFixed(1)}" y="${(ty + 4).toFixed(1)}" class="t-dot f-ink" font-size="12">${text}</text>`;
-    return this.raw(g, [ax, ay], [rx - 2, ty - 11], [rx + w + 2, ty + 10]);
+      `<rect x="${rx.toFixed(1)}" y="${(ty - 9).toFixed(1)}" width="${w.toFixed(1)}" height="${h}" class="f-paper s-ink"/>` +
+      `<text class="t-dot f-ink" font-size="12">${spans}</text>`;
+    return this.raw(g, [ax, ay], [rx - 2, ty - 11], [rx + w + 2, ty - 9 + h + 2]);
   }
 
   /** Speech bubble whose tail points at (ax, ay). */
