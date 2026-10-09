@@ -1,0 +1,12 @@
+---
+import { diorama } from '../dioramas';
+interface Props { name: string; jp: string; en: string; note?: string; size?: 'hero' | 'post' }
+const { name, jp, en, note, size = 'post' } = Astro.props;
+const svg = diorama(name);
+---
+{svg && (
+  <figure class={`diorama diorama-${size}`}>
+    <Fragment set:html={svg} />
+    <figcaption class="museum"><b><span lang="ja">{jp}</span> · {en}</b>{note && <span class="t-dot">{note}</span>}</figcaption>
+  </figure>
+)}

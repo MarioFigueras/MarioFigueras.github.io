@@ -1,5 +1,7 @@
 ---
+import '../styles/fonts.css';
 import '../styles/global.css';
+import { upcoming, jdate } from '../lib/site';
 
 interface Props {
   title?: string;
@@ -7,14 +9,16 @@ interface Props {
 }
 
 const site = 'Mario Figueras';
-const { title, description = 'Devlog: building NihonWorld and learning to work with AI agents, Jira and architecture, in the open.' } = Astro.props;
+const { title, description = 'Devlog: building NihonWorld, a Japanese tutor you play, with three AI assistants and a lot of tickets.' } = Astro.props;
 const fullTitle = title ? `${title} · ${site}` : `${site} · Devlog`;
 const path = Astro.url.pathname;
 const nav = [
-  { href: '/', label: 'Home' },
-  { href: '/blog/', label: 'Devlog' },
-  { href: '/about/', label: 'About' },
+  { href: '/', label: 'HOME' },
+  { href: '/blog/', label: 'DEVLOG' },
+  { href: '/about/', label: 'ABOUT' },
+  { href: '/rss.xml', label: 'RSS' },
 ];
+const nx = await upcoming();
 ---
 
 <!doctype html>
@@ -24,29 +28,40 @@ const nav = [
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
+    <meta name="color-scheme" content="light dark" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="canonical" href={new URL(path, Astro.site)} />
+    <link rel="alternate" type="application/rss+xml" title="Mario Figueras · Devlog" href="/rss.xml" />
+    <link rel="preload" href="/fonts/newsreader-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/bricolage-normal.woff2" as="font" type="font/woff2" crossorigin />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
   </head>
   <body>
-    <header class="site-header">
-      <a class="brand" href="/"><span class="dot" aria-hidden="true"></span>Mario Figueras</a>
-      <nav>
-        {nav.map((n) => (
-          <a href={n.href} aria-current={(n.href === '/' ? path === '/' : path.startsWith(n.href)) ? 'page' : undefined}>{n.label}</a>
-        ))}
-      </nav>
-    </header>
-    <main>
-      <slot />
-    </main>
-    <footer class="site-footer">
-      <p>Written by me, drafted with help from AI assistants. Every post is reviewed and approved by me before it goes up.</p>
-      <p>
-        <a href="https://github.com/MarioFigueras">GitHub</a> ·
-        <a href="https://www.linkedin.com/in/mario-figueras" rel="me">LinkedIn</a>
-      </p>
-    </footer>
+    <a class="visually-hidden" href="#main">Skip to content</a>
+    <div class="status t-dot">
+      <div class="wrap">
+        <span class="on">ONLINE</span>
+        <span class="hide">AGENTS <b>3</b> · HUMAN <b>1</b></span>
+        <nav aria-label="Main">
+          {nav.map((n) => (
+            <a href={n.href} aria-current={(n.href === '/' ? path === '/' : path.startsWith(n.href)) ? 'page' : undefined}>{n.label}</a>
+          ))}
+        </nav>
+        {nx && <a class="nx hide" href="/">NEXT TRANSMISSION ▸ {jdate(nx.date)}</a>}
+      </div>
+    </div>
+    <div class="wrap">
+      <main id="main">
+        <slot />
+      </main>
+      <footer class="site-footer">
+        <span>Written by me, drafted with help from AI assistants. They propose; I review and approve every post.</span>
+        <span class="t-dot">
+          <a href="https://github.com/MarioFigueras">GITHUB</a> ·
+          <a href="https://www.linkedin.com/in/mario-figueras" rel="me">LINKEDIN</a> · <span lang="ja">開発日誌</span>
+        </span>
+      </footer>
+    </div>
   </body>
 </html>

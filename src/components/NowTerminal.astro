@@ -1,0 +1,8 @@
+---
+import { now } from '../data/now';
+---
+<section class="term" aria-label="What I'm doing now">
+  <div class="term-bar t-dot"><i></i><i></i><i></i><span>mario@lab: ~/now</span></div>
+  <pre class="t-dot"><span class="c">$ now --short</span>
+{now.lines.map(([k, v]) => <><span class="k">{k}</span>  {v}{'\n'}</>)}<span class="c">$</span> <span class="cursor"></span></pre>
+</section>

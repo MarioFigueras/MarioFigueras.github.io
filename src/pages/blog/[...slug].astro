@@ -1,25 +1,52 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { render } from 'astro:content';
 import Base from '../../layouts/Base.astro';
+import Diorama from '../../components/Diorama.astro';
+import Plinth from '../../components/Plinth.astro';
+import { posts, jdate, entryNumber, pad2 } from '../../lib/site';
 
 export async function getStaticPaths() {
-  const posts = await getCollection('blog');
-  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+  return (await posts()).map((post) => ({ params: { slug: post.id }, props: { post } }));
 }
 
 const { post } = Astro.props;
+const d = post.data;
 const { Content } = await render(post);
-const date = post.data.date.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+const n = entryNumber(post);
+const words = (post.body ?? '').split(/\s+/).filter(Boolean).length;
+const minutes = Math.max(1, Math.round(words / 230));
 ---
 
-<Base title={post.data.title} description={post.data.description}>
+<Base title={d.title} description={d.description}>
   <article>
-    <p class="post-meta">
-      <time datetime={post.data.date.toISOString()}>{date}</time>
-      {post.data.series && <span> · {post.data.series}</span>}
-    </p>
-    <h1>{post.data.title}</h1>
-    <Content />
+    <header class="phead">
+      <div>
+        <div class="chips t-dot"><span class="b">DEVLOG No.{pad2(n)}</span><span>{jdate(d.date)}</span><span>{minutes} MIN READ</span></div>
+        <h1>{d.title}</h1>
+        <p class="dek">{d.description}</p>
+        <div class="label t-dot">{d.jira && <span class="k">{d.jira}</span>}<span><span lang="ja">済</span> PUBLISHED</span>{d.tags.length > 0 && <span>{d.tags.join(' · ')}</span>}</div>
+        <div class="crew t-dot">drafted <i>{d.drafted}</i> · approved <i>mario</i></div>
+      </div>
+      {d.diorama ? (
+        <Diorama name={d.diorama.name} jp={d.diorama.jp} en={d.diorama.en} note={d.diorama.note} />
+      ) : (
+        <Plinth n={n} size="lg" />
+      )}
+    </header>
+    <div class="pbody">
+      <div class="prose"><Content /></div>
+      <aside>
+        {d.spec && (
+          <div class="spec">
+            <div class="h t-dot"><span>TICKET</span><span>{d.spec.key}</span></div>
+            <p>{d.spec.text}</p>
+            {d.spec.rows.length > 0 && (
+              <dl class="t-dot">{d.spec.rows.map(([k, v]) => <><dt>{k.toUpperCase()}</dt><dd>{v}</dd></>)}</dl>
+            )}
+          </div>
+        )}
+      </aside>
+    </div>
   </article>
-  <p><a href="/blog/">← All entries</a></p>
+  <p class="back t-dot"><a href="/blog/">◂ ALL ENTRIES</a></p>
 </Base>

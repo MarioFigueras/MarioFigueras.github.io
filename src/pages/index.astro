@@ -1,46 +1,60 @@
 ---
-import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import Diorama from '../components/Diorama.astro';
+import Entry from '../components/Entry.astro';
+import NowTerminal from '../components/NowTerminal.astro';
+import { posts, upcoming, entryNumber, pad2 } from '../lib/site';
 
-const posts = (await getCollection('blog')).sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf()).slice(0, 5);
-const fmt = (d: Date) => d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+const all = await posts();
+const latest = all.slice(0, 5);
+const nx = await upcoming();
+const issue = pad2(Math.max(0, ...all.map(entryNumber), nx?.n ?? 0));
+const month = new Date().toISOString().slice(0, 7).replace('-', '.');
 
 const projects = [
-  { name: 'NihonWorld', text: 'A Japanese tutor you play. Plain code decides what you learn; an LLM only plays a part in the scene.' },
-  { name: 'Generator', text: "Makes NihonWorld's content. It proposes, a human reviews, and only approved content reaches the game." },
-  { name: 'Agent Hub', text: 'How I get Claude, ChatGPT and Codex to work on the same project: they audit each other, I approve.' },
+  { name: 'NihonWorld', state: 'grey boxes', text: 'A Japanese tutor you play. Plain code decides what you learn; an LLM only plays a part in the scene.' },
+  { name: 'Generator', state: 'splitting out', text: "Makes NihonWorld's content. It proposes, a human reviews, and only approved content reaches the game." },
+  { name: 'Agent Hub', state: 'running', text: 'How Claude, ChatGPT and Codex work on the same project: they audit each other, I approve.' },
 ];
 ---
 
 <Base>
-  <h1>Hi, I'm Mario.</h1>
-  <p class="lead">
-    I'm building NihonWorld, a Japanese tutor you play, and learning a lot on the way: architecture, Jira, and how
-    to get AI agents to work together without letting them greenlight stuff that isn't properly tested.
-  </p>
-  <p>This is where I write down what actually happened, mistakes included.</p>
+  <section class="mast">
+    <div>
+      <div class="chips t-dot"><span class="b">No.{issue}</span><span>{month}</span><span>ONE HUMAN · THREE AIS</span></div>
+      <h1 class="logo"><span class="word">DEV<br />LOG</span><span class="kana" lang="ja" aria-label="開発日誌">{[...'開発日誌'].map((c) => <span aria-hidden="true">{c}</span>)}</span><span class="visually-hidden">Mario Figueras's devlog</span></h1>
+      <p class="who">Mario Figueras builds <em>a Japanese tutor you play</em>, one diorama at a time.</p>
+      <p class="intro">
+        I'm building <strong>NihonWorld</strong> together with three AI assistants that check each other's work. My day job
+        is Jira administration. This is where I write down what actually happened, mistakes included.
+      </p>
+    </div>
+    <Diorama name="lab" jp="研究室" en="the lab" note="Ivliss Lab · three AIs, one human" size="hero" />
+  </section>
 
-  <h2>Latest entries</h2>
-  {posts.length === 0 ? (
-    <p class="empty">First entry coming soon: why I'm splitting NihonWorld into two projects before adding more features.</p>
-  ) : (
-    <ul class="posts">
-      {posts.map((p) => (
-        <li>
-          <time datetime={p.data.date.toISOString()}>{fmt(p.data.date)}</time>
-          <a href={`/blog/${p.id}/`}>{p.data.title}</a>
-        </li>
-      ))}
-    </ul>
-  )}
-
-  <h2>What I'm working on</h2>
-  <ul class="cards">
-    {projects.map((p) => (
-      <li class="card">
-        <h3>{p.name}</h3>
-        <p>{p.text}</p>
-      </li>
-    ))}
-  </ul>
+  <div class="cols">
+    <section>
+      {nx && (
+        <>
+          <h2 class="sec t-dot">NEXT TRANSMISSION</h2>
+          <div class="next">
+            <span class="when">{nx.date.slice(5).replace('-', '.')}</span>
+            <div><span class="t-dot">DEVLOG No.{pad2(nx.n)} · {nx.key}</span><h3>{nx.title}</h3></div>
+          </div>
+        </>
+      )}
+      <h2 class="sec t-dot">ARCHIVE</h2>
+      {latest.map((p) => <Entry post={p} />)}
+      {all.length > latest.length && <p class="back t-dot"><a href="/blog/">ALL ENTRIES ▸</a></p>}
+    </section>
+    <aside>
+      <NowTerminal />
+      <div class="desk">
+        <h2 class="sec t-dot">ON THE DESK</h2>
+        {projects.map((p) => (
+          <div class="proj"><span class="state t-dot">{p.state}</span><b>{p.name}</b><p>{p.text}</p></div>
+        ))}
+      </div>
+    </aside>
+  </div>
 </Base>

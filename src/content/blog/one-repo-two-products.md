@@ -5,6 +5,18 @@ date: 2026-10-08
 series: "Devlog #1"
 tags: [nihonworld, architecture, adr, ai-agents]
 jira: DLOG-1
+diorama:
+  name: one-repo-two-products
+  jp: 分割
+  en: the split
+  note: approved content crosses one way
+spec:
+  key: JAI-5
+  text: Decide how to separate the repositories.
+  rows:
+    - [status, Done]
+    - [sub-tasks, 6 / 6]
+    - [output, ADR-001 accepted]
 ---
 
 NihonWorld is a Japanese tutor you play. There's a 3D room, a school, and later places where you

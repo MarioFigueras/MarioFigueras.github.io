@@ -7,6 +7,13 @@ My devlog: building NihonWorld and learning to work with AI agents, Jira and arc
 - **Publishing:** every entry arrives through a pull request. Merging it to `main` is the approval, and
   the workflow in `.github/workflows/deploy.yml` builds and deploys the site.
 - **CI:** official GitHub actions only, pinned by commit SHA. Astro telemetry is off.
+- **Look:** a two-ink riso zine with a Japanese retro-futurist touch. Fonts are self-hosted from
+  `public/fonts/` (SIL Open Font License, texts in `public/fonts/licenses/`), so visitors' browsers never
+  call Google.
+- **Dioramas:** drawn in code at build time (`src/lib/iso.ts`, one scene per post in `src/dioramas/`,
+  named in the post's `diorama:` frontmatter). No client JavaScript.
+- **Home extras:** the "now" terminal (`src/data/now.ts`) and the next-entry teaser (`src/data/next.ts`,
+  hidden automatically once that entry is published).
 
 ## Local
 

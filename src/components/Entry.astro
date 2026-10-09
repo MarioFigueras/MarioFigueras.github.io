@@ -1,0 +1,16 @@
+---
+import Plinth from './Plinth.astro';
+import { jdate, entryNumber, type Post } from '../lib/site';
+interface Props { post: Post }
+const { post } = Astro.props;
+const d = post.data;
+---
+<article class="entry">
+  <Plinth n={entryNumber(post)} />
+  <div>
+    <h3><a href={`/blog/${post.id}/`}>{d.title}</a></h3>
+    <p>{d.description}</p>
+    <div class="label t-dot"><span>{jdate(d.date)}</span>{d.jira && <span class="k">{d.jira}</span>}{d.tags.length > 0 && <span>{d.tags.join(' · ')}</span>}</div>
+    <div class="crew t-dot">drafted <i>{d.drafted}</i> · approved <i>mario</i></div>
+  </div>
+</article>
