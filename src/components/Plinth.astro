@@ -1,18 +1,20 @@
 ---
 import { Scene } from '../lib/iso';
-interface Props { n: number; size?: 'sm' | 'lg' }
-const { n, size = 'sm' } = Astro.props;
-const label = String(n).padStart(2, '0');
+interface Props { n: number; extra?: boolean; size?: 'sm' | 'lg' }
+const { n, extra = false, size = 'sm' } = Astro.props;
+const label = extra ? '号外' : String(n).padStart(2, '0');
 // The entry number standing on a little plinth: a diorama base with nothing on it but the number.
+// An Extra has no number: it gets 号外, the word printed on a newspaper's special edition.
 const s = new Scene(size === 'lg' ? 40 : 20);
 s.box(0, 0, 0, 2, 2, 0.7, 'f-paper s-ink', 'f-solid s-ink', 'f-solid2 s-ink');
 const [tx, ty] = s.p(1, 1, 0.7);
-const fs = size === 'lg' ? 78 : 34;
+const fs = (size === 'lg' ? 78 : 34) * (extra ? 0.62 : 1);
+const font = extra ? 't-dela' : 't-zen';
 s.raw(
-  `<text x="${tx + fs * 0.07}" y="${ty - fs * 0.05}" text-anchor="middle" class="t-zen f-pink" font-size="${fs}">${label}</text>` +
-    `<text x="${tx}" y="${ty - fs * 0.13}" text-anchor="middle" class="t-zen f-blue blend" font-size="${fs}">${label}</text>`,
-  [tx - fs * 0.75, ty - fs * 0.95],
-  [tx + fs * 0.8, ty],
+  `<text x="${tx + fs * 0.07}" y="${ty - fs * 0.05}" text-anchor="middle" class="${font} f-pink" font-size="${fs}">${label}</text>` +
+    `<text x="${tx}" y="${ty - fs * 0.13}" text-anchor="middle" class="${font} f-blue blend" font-size="${fs}">${label}</text>`,
+  [tx - fs * 1.05, ty - fs * 0.95],
+  [tx + fs * 1.1, ty],
 );
 ---
-<span class={`plinth plinth-${size}`} aria-hidden="true" set:html={s.svg(`Entry ${label}`, 4)} />
+<span class={`plinth plinth-${size}`} aria-hidden="true" set:html={s.svg(extra ? 'Extra' : `Entry ${label}`, 4)} />

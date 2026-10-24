@@ -18,6 +18,6 @@ export const GET: APIRoute = async ({ site }) => {
     .join('');
   const xml = `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel>` +
     `<title>Mario Figueras · Devlog</title><link>${base.href}</link>` +
-    `<description>Building NihonWorld with three AI assistants, in the open.</description><language>en</language>${items}</channel></rss>`;
+    `<description>Building Kotomachi Gakuen with three AI assistants, in the open.</description><language>en</language>${items}</channel></rss>`;
   return new Response(xml, { headers: { 'Content-Type': 'application/rss+xml; charset=utf-8' } });
 };

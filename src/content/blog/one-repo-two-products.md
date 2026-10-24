@@ -4,7 +4,7 @@ description: "Why NihonWorld is becoming two projects, and how three AIs and I m
 date: 2026-10-08
 series: "Devlog #1"
 tags: [nihonworld, architecture, adr, ai-agents]
-topics: [nihonworld, generator]
+topics: [kotomachi-gakuen, kotokiln]
 revision: Rewritten on 2026-10-09 to make it shorter.
 jira: DLOG-1
 diorama:
@@ -20,6 +20,10 @@ spec:
     - [sub-tasks, 6 / 6]
     - [output, ADR-001 accepted]
 ---
+
+<p class="note"><b>A note on names.</b> When I wrote this, the game was still called NihonWorld and the
+Generator didn't have a name of its own. They're now Kotomachi Gakuen and Kotokiln.
+<a href="/blog/real-names/">What the new names mean</a></p>
 
 NihonWorld is a Japanese tutor you play. You don't walk around a 3D world: every place is a diorama,
 a small scene you look into and interact with, like your room or the school, and later places where

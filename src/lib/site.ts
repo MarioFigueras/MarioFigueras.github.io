@@ -11,8 +11,11 @@ export const jdate = (d: Date | string) => {
   return `${x.getUTCFullYear()}.${mm}.${dd}`;
 };
 
-/** "Devlog #1" → 1 (the entry number shown on its plinth). */
+/** "Devlog #1" → 1 (the entry number shown on its plinth). An Extra has no number (0). */
 export const entryNumber = (p: Post) => Number((p.data.series ?? '').match(/#(\d+)/)?.[1] ?? 0);
+
+/** An Extra (号外, a newspaper's special edition): news between the numbered entries. */
+export const isExtra = (p: Post) => /^extra\b/i.test(p.data.series ?? '');
 
 export const pad2 = (n: number) => String(n).padStart(2, '0');
 

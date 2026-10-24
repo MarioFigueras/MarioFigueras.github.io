@@ -2,11 +2,13 @@
 // (/topics/<slug>/) and a chip on each entry. Add a topic here before using it in a post; the
 // content schema rejects any other value, so a typo fails the build instead of making a new filter.
 export const TOPICS = [
-  { slug: 'nihonworld', label: 'NihonWorld', ink: 'pink' },
-  { slug: 'generator', label: 'Generator', ink: 'mint' },
-  { slug: 'agent-hub', label: 'Agent Hub', ink: 'blue' },
+  { slug: 'kotomachi-gakuen', label: 'Kotomachi Gakuen', ink: 'pink' },
+  { slug: 'kotokiln', label: 'Kotokiln', ink: 'mint' },
+  { slug: 'ringi', label: 'Ringi', ink: 'blue' },
   { slug: 'jira-confluence', label: 'Jira & Confluence', ink: 'grey' },
 ] as const;
+
+// Renaming a slug? Add a redirect from the old one in astro.config.mjs, so shared links keep working.
 
 export type TopicSlug = (typeof TOPICS)[number]['slug'];
 export const TOPIC_SLUGS = TOPICS.map((t) => t.slug) as [TopicSlug, ...TopicSlug[]];
