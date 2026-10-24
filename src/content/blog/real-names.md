@@ -1,7 +1,7 @@
 ---
 title: "Real names: Kotomachi Gakuen, Kotokiln and Ringi"
 description: "The three projects drop their placeholder names. What the new ones mean, and why I picked them."
-date: 2026-10-13
+date: 2026-10-24
 series: "Extra"
 jira: DLOG-7
 topics: [kotomachi-gakuen, kotokiln, ringi]
@@ -64,9 +64,9 @@ last one.
 
 ## What changes
 
-The site, Jira and Confluence switch to the new names this week, and the old links keep working. The
-code takes a bit longer: Kotokiln gets its name when it moves into its own repo, and the game's repo
+The site switches to the new names today, Jira and Confluence already have them, and the old links
+keep working. The code takes a bit longer: Kotokiln gets its name when it moves into its own repo, and the game's repo
 gets renamed at the next stop of the split, so I'm not renaming things in the middle of moving them.
 The older posts keep the old names, because that's what things were called back then.
 
-Next up, on Thursday: Jira and Confluence for a team of one (and three AIs).
+Next up: Jira and Confluence for a team of one (and three AIs).
